@@ -27,6 +27,10 @@ import sys
 from datetime import date
 from pathlib import Path
 
+# The command a member types to start Python: `python3` on a Mac, which has no plain
+# `python` command, and `python` everywhere else, as the Windows guides print it.
+PY = "python3" if sys.platform == "darwin" else "python"
+
 LAYER = 3
 LAYER_NAME = "What You Store"
 NEEDS_LAYER = 2
@@ -326,7 +330,7 @@ written, with the raw identifiers kept, and `person` left empty. An event nobody
 attribute is a gap worth investigating, not something to throw away. Discarding
 those would make this file look tidier and make every count taken from it wrong.
 
-    python _engine/ledger.py stats
+    {py} _engine/ledger.py stats
 
 tells you how many of those you have.
 
@@ -373,13 +377,13 @@ happened.
 | `_ledger/events.jsonl` | The log. One line per event. |
 | `_engine/ledger.py` | Writes and reads it. Refuses an event type nobody agreed on. |
 | `_engine/derive.py` | Calculates every descriptive field from the log. |
-| `_engine/settings.json` | Your numbers: the park window, the re-check windows, your own event types. |
+| `_engine/settings.json` | Your numbers: the park window, the re-check periods, your own event types. |
 
 Try it:
 
-    python _engine/ledger.py types
-    python _engine/ledger.py stats
-    python _engine/derive.py quiet 60
+    {py} _engine/ledger.py types
+    {py} _engine/ledger.py stats
+    {py} _engine/derive.py quiet 60
 
 **What there is to do now: nothing, honestly.** The calculation is real, but there
 are no events to calculate from until something starts recording them, and that is
@@ -389,7 +393,7 @@ admin this whole system exists to avoid.
 **What it leaves for Layer 4.** A record of events that nobody is writing. If that
 somebody is you, typing, you have reinvented admin, which is the thing that kills
 CRMs. Layer 4 fills the log from sources you already own.
-""".format(n=LAYER, name=LAYER_NAME, park=park)
+""".format(n=LAYER, name=LAYER_NAME, park=park, py=PY)
 
 
 # ------------------------------------------------------------------------- build
@@ -444,7 +448,7 @@ def build(home, answers):
         lines.append("- `%s` - %s%s"
                      % (k, known[k], "  (counts as contact)" if k in contact else ""))
     p = home / "_ledger" / "README.md"
-    write(p, ledger_readme(answers).format(types="\n".join(lines) or "(none yet)"))
+    write(p, ledger_readme(answers).format(types="\n".join(lines) or "(none yet)", py=PY))
     note(p, "what the log is and why nothing in it is edited")
 
     p = home / "_layers" / ("Layer %d - %s.md" % (LAYER, LAYER_NAME))
